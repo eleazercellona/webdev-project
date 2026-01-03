@@ -18,3 +18,15 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+// ... existing routes ...
+
+// This group is protected. Only 'admin' can enter.
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    
+    Route::get('/admin/dashboard', function () {
+        return "<h1>Welcome to the Admin Dashboard</h1><p>Only admins can see this!</p>";
+    })->name('admin.dashboard');
+
+    // You can add more admin routes here later (e.g., /admin/users, /admin/reports)
+});
