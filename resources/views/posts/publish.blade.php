@@ -5,7 +5,7 @@
             <div class="flex justify-between items-center">
                 <div>
                     <h2 class="font-bold text-3xl text-gray-800 leading-tight">
-                        Dashboard
+                        Published
                     </h2>
                     <p class="text-gray-500 text-sm mt-1">
                         Welcome to your content management system.
