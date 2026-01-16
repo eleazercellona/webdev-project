@@ -4,23 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-        public function index()
+    public function index(Request $request)
     {
-        // 1. Calculate Stats for the top cards
-        $total = \App\Models\Post::count();
-        $published = \App\Models\Post::where('is_published', true)->count();
-        $drafts = \App\Models\Post::where('is_published', false)->count();
+        $user = auth()->user();
 
-        // 2. Get posts with pagination (10 per page)
-        $posts = \App\Models\Post::with('user')->latest()->paginate(10);
+        // Admin sees all, User sees only theirs
+        $query = $user->hasRole('admin') 
+            ? \App\Models\Post::query() 
+            : \App\Models\Post::where('user_id', $user->id);
 
-        // 3. Pass everything to the view
+        // Status Filter
+        if ($request->filled('status') && $request->status !== 'all') {
+        $query->where('is_published', $request->status === 'published');
+        }
+
+        // User Dashboard to Content Filter
+        if ($request->filled('status') && $request->status !== 'all') {
+        $query->where('is_published', $request->status === 'published');
+        }
+
+        // Sorting Filter (Newest/Oldest)
+        if ($request->sort === 'oldest') {
+        $query->orderBy('created_at', 'asc');
+        } else {
+            $query->latest(); 
+        }
+
+        // Stats based on scope
+        $total = (clone $query)->count();
+        $published = (clone $query)->where('is_published', true)->count();
+        $drafts = (clone $query)->where('is_published', false)->count();
+
+        // Paginate 10 items
+        $posts = (clone $query)->with('user')->latest()->paginate(10);
+
         return view('posts.index', compact('posts', 'total', 'published', 'drafts'));
     }
 
@@ -82,11 +106,15 @@ class PostController extends Controller
 
         $validated = $request->validate([
         'title' => 'required|string|max:255',
+        'slug' => 'required|string|max:255', 
         'body' => 'required|string',
-        // We might add 'is_published' validation here later for admins
         ]);
 
-        $post->update($validated);
+        $post->fill($validated);
+
+        $post->is_published = (bool) $request->input('is_published');
+
+        $post->save();
 
         return redirect()->route('posts.index')->with('success', 'Post updated successfully!');
     }
@@ -103,5 +131,36 @@ class PostController extends Controller
         $post->delete();
 
         return redirect()->route('posts.index')->with('success', 'Post deleted successfully!');
+    }
+
+    public function published()
+    {
+        $user = auth()->user();
+
+        // Admin sees all published, User sees only theirs
+        $query = $user->hasRole('admin') 
+            ? \App\Models\Post::query() 
+            : \App\Models\Post::where('user_id', $user->id);
+
+        // Filter only published items and paginate 10
+        $dashboardPosts = (clone $query)->where('is_published', true)->latest()->paginate(10);
+
+        return view('posts.published', [
+            'dashboardPosts' => $dashboardPosts,
+            'globalTotalContent' => (clone $query)->count(),
+            'globalPublishedCount' => (clone $query)->where('is_published', true)->count(),
+            'globalDraftCount' => (clone $query)->where('is_published', false)->count(),
+        ]);
+    }
+    
+        public function preview(Post $post)
+    {
+        // Ensure regular users can only preview their own drafts, 
+        // but everyone can see published posts.
+        if (!$post->is_published && $post->user_id !== auth()->id() && !auth()->user()->hasRole('admin')) {
+            abort(403);
+        }
+
+        return view('posts.preview', compact('post'));
     }
 }
