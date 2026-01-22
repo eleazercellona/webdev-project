@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Post>
@@ -16,9 +17,13 @@ class PostFactory extends Factory
      */
     public function definition(): array
     {
+        $title = fake()->sentence();
+        $slug = Str::slug($title . '-' . fake()->unique()->randomNumber(5));
+
         return [
             // Generate a random sentence for the title
-            'title' => fake()->sentence(),
+            'title' => $title,
+            'slug' => $slug,
             
             // Generate 3-5 paragraphs for the body
             'body' => fake()->paragraphs(3, true),

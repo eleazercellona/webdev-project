@@ -34,22 +34,26 @@
                     <div class="mb-4">
                         <x-input-label value="Title" />
                         <x-text-input
+                            id="title"
                             class="mt-1 w-full"
                             name="title"
                             value="{{ old('title', $post->title) }}"
                             required
                         />
+                        <x-input-error :messages="$errors->get('title')" class="mt-2" />
                     </div>
 
-                    <!-- Slug -->
+                    <!-- Slug (auto-generated) -->
                     <div class="mb-4">
                         <x-input-label value="Slug" />
                         <x-text-input
-                            class="mt-1 w-full"
+                            id="slug"
+                            class="mt-1 w-full bg-gray-50"
                             name="slug"
                             value="{{ old('slug', $post->slug) }}"
+                            readonly
                         />
-                        <p class="text-xs text-gray-400 mt-1">Slug must be unique</p>
+                        <p class="text-xs text-gray-400 mt-1">Automatically generated from the title</p>
                     </div>
 
                     <!-- Body -->
@@ -60,6 +64,7 @@
                             rows="8"
                             class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         >{{ old('body', $post->body) }}</textarea>
+                        <x-input-error :messages="$errors->get('body')" class="mt-2" />
                     </div>
                 </div>
 
@@ -70,11 +75,12 @@
                     <!-- Status -->
                     <div class="mb-4">
                         <x-input-label value="Status" />
+                        @php($status = old('is_published', $post->is_published ? '1' : '0'))
                         <select
                             name="is_published"
                             class="mt-1 w-full border-gray-300 rounded-lg shadow-sm">
-                            <option value="0" @selected(!$post->is_published)>Draft</option>
-                            <option value="1" @selected($post->is_published)>Published</option>
+                            <option value="0" @selected($status === '0')>Draft</option>
+                            <option value="1" @selected($status === '1')>Published</option>
                         </select>
                     </div>
 
@@ -164,4 +170,26 @@
             </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const titleInput = document.getElementById('title');
+            const slugInput = document.getElementById('slug');
+
+            if (!titleInput || !slugInput) return;
+
+            const slugify = (value) => value
+                .toString()
+                .trim()
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .replace(/--+/g, '-');
+
+            titleInput.addEventListener('input', () => {
+                slugInput.value = slugify(titleInput.value);
+            });
+        })();
+    </script>
 </x-app-layout>

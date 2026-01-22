@@ -59,7 +59,7 @@
                                         {{ $post->title }}
                                     </td>
                                     <td class="px-8 py-5 text-[13px] text-gray-400 italic">
-                                        {{ Str::slug($post->title) }}
+                                        {{ $post->slug }}
                                     </td>
                                     @role('admin')
                                     <td class="px-8 py-5 text-sm font-bold text-gray-800">{{ $post->user->name }}</td>

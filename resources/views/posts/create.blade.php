@@ -33,24 +33,27 @@
                                 name="title"
                                 type="text"
                                 class="mt-1 block w-full"
-                                placeholder="Enter content title"
-                                required
+                            placeholder="Enter content title"
+                                value="{{ old('title') }}"
+                            required
                             />
                             <x-input-error :messages="$errors->get('title')" class="mt-2" />
                         </div>
 
-                        <!-- Slug (optional but matches design) -->
+                        <!-- Slug (auto-generated) -->
+                        @php($derivedSlug = old('slug', old('title') ? \Illuminate\Support\Str::slug(old('title')) : ''))
                         <div class="mb-4">
                             <x-input-label for="slug" value="Slug" />
                             <x-text-input
                                 id="slug"
                                 name="slug"
                                 type="text"
-                                class="mt-1 block w-full"
-                                placeholder="content-url-slug"
+                                class="mt-1 block w-full bg-gray-50"
+                                value="{{ $derivedSlug }}"
+                                readonly
                             />
                             <p class="text-xs text-gray-400 mt-1">
-                                URL-friendly version of the title
+                                Automatically generated from the title
                             </p>
                         </div>
 
@@ -64,7 +67,7 @@
                                 class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                                 placeholder="Write your content here..."
                                 required
-                            ></textarea>
+                            >{{ old('body') }}</textarea>
                             <x-input-error :messages="$errors->get('body')" class="mt-2" />
                         </div>
                     </div>
@@ -78,13 +81,14 @@
                         <!-- Status -->
                         <div class="mb-4">
                             <x-input-label for="is_published" value="Status" />
+                            @php($status = old('is_published', '0'))
                             <select
                                 id="is_published"
                                 name="is_published"
                                 class="mt-1 block w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                             >
-                                <option value="0">Draft</option>
-                                <option value="1">Published</option>
+                                <option value="0" @selected($status === '0')>Draft</option>
+                                <option value="1" @selected($status === '1')>Published</option>
                             </select>
                         </div>
 
@@ -129,4 +133,29 @@
             </form>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const titleInput = document.getElementById('title');
+            const slugInput = document.getElementById('slug');
+
+            if (!titleInput || !slugInput) return;
+
+            const slugify = (value) => value
+                .toString()
+                .trim()
+                .toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .replace(/--+/g, '-');
+
+            const updateSlug = () => {
+                slugInput.value = slugify(titleInput.value);
+            };
+
+            updateSlug();
+            titleInput.addEventListener('input', updateSlug);
+        })();
+    </script>
 </x-app-layout>

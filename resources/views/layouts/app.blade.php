@@ -18,6 +18,14 @@
         <div class="min-h-screen bg-gray-100">
             @include('layouts.navigation')
 
+            @if (session('success'))
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+                    <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg shadow-sm">
+                        <p class="font-semibold">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-white shadow">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -64,12 +65,23 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
+            'is_published' => 'nullable|boolean',
+            'save_as_draft' => 'nullable|boolean',
         ]);
 
+        $isPublished = $request->boolean('is_published');
+
+        if ($request->boolean('save_as_draft')) {
+            $isPublished = false;
+        }
+
+        $slug = $this->generateUniqueSlug($validated['title']);
+
         $request->user()->posts()->create([
-        'title' => $validated['title'],
-        'body' => $validated['body'],
-        'is_published' => false, // Default to draft
+            'title' => $validated['title'],
+            'slug' => $slug,
+            'body' => $validated['body'],
+            'is_published' => $isPublished,
         ]);
 
         return redirect()->route('posts.index')->with('success', 'Post created successfully!');
@@ -105,14 +117,21 @@ class PostController extends Controller
         }
 
         $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'slug' => 'required|string|max:255', 
-        'body' => 'required|string',
+            'title' => 'required|string|max:255',
+            'body' => 'required|string',
+            'is_published' => 'nullable|boolean',
         ]);
 
-        $post->fill($validated);
+        $slug = $post->title === $validated['title']
+            ? $post->slug
+            : $this->generateUniqueSlug($validated['title'], $post->id);
 
-        $post->is_published = (bool) $request->input('is_published');
+        $post->fill([
+            'title' => $validated['title'],
+            'slug' => $slug,
+            'body' => $validated['body'],
+            'is_published' => $request->boolean('is_published'),
+        ]);
 
         $post->save();
 
@@ -162,5 +181,23 @@ class PostController extends Controller
         }
 
         return view('posts.preview', compact('post'));
+    }
+
+    private function generateUniqueSlug(string $title, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($title) ?: 'post';
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (
+            Post::where('slug', $slug)
+                ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
     }
 }

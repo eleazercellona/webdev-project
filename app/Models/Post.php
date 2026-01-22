@@ -12,6 +12,7 @@ class Post extends Model
     // Allow these fields to be filled
     protected $fillable = [
         'title',
+        'slug',
         'body',
         'is_published',
         'user_id'

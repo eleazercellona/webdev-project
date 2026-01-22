@@ -69,7 +69,7 @@
                             @forelse ($posts as $post)
                             <tr class="hover:bg-gray-50/50 transition-colors">
                                 <td class="px-8 py-5 text-[14px] font-medium text-blue-600 truncate max-w-[240px]">{{ $post->title }}</td>
-                                <td class="px-8 py-5 text-[13px] text-gray-400 font-normal truncate max-w-[180px]">{{ Str::slug($post->title) }}</td>
+                                <td class="px-8 py-5 text-[13px] text-gray-400 font-normal truncate max-w-[180px]">{{ $post->slug }}</td>
                                 <td class="px-8 py-5">
                                     <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight {{ $post->is_published ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                                         {{ $post->is_published ? 'Published' : 'Draft' }}
