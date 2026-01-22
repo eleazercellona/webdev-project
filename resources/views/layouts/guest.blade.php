@@ -15,6 +15,7 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://unpkg.com/quicklink@2.3.0/dist/quicklink.umd.js" defer></script>
     </head>
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-10 sm:pt-0 bg-gray-100">
@@ -25,5 +26,15 @@
                 {{ $slot }}
             </div>
         </div>
+        <script>
+            window.addEventListener('load', () => {
+                if (window.quicklink) {
+                    window.quicklink.listen({
+                        origins: [location.origin],
+                        ignores: [uri => uri.includes('logout'), /#/]
+                    });
+                }
+            });
+        </script>
     </body>
 </html>

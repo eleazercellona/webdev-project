@@ -84,19 +84,23 @@
                                         @php($statusClass = $post->is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600')
                                         <tr>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <div class="text-sm font-medium text-blue-600 hover:text-blue-800">
+                                                <div class="text-sm font-medium text-blue-600 hover:text-blue-800 max-w-[320px] truncate">
                                                     <span x-show="!loading" x-cloak>{{ $post->title }}</span>
-                                                    <span x-show="loading" x-cloak class="block h-4 w-48 bg-gray-200 rounded-full animate-pulse"></span>
+                                                    <span x-show="loading" x-cloak class="block h-4 w-[320px] bg-gray-200 rounded-full animate-pulse"></span>
                                                 </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <span
-                                                    class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                                    :class="loading ? 'bg-transparent text-transparent' : '{{ $statusClass }}'"
-                                                >
-                                                    <span x-show="!loading" x-cloak>{{ $post->is_published ? 'Published' : 'Draft' }}</span>
-                                                    <span x-show="loading" x-cloak class="block h-3 w-12 bg-gray-200 rounded-full animate-pulse"></span>
-                                                </span>
+                                                <div class="w-32">
+                                                    <span
+                                                        class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                                        :class="loading ? 'bg-transparent text-transparent' : '{{ $statusClass }}'"
+                                                        x-show="!loading"
+                                                        x-cloak
+                                                    >
+                                                        {{ $post->is_published ? 'Published' : 'Draft' }}
+                                                    </span>
+                                                    <span x-show="loading" x-cloak class="block h-3 w-full bg-gray-200 rounded-full animate-pulse"></span>
+                                                </div>
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                                                 <span x-show="!loading" x-cloak>{{ $post->user->name }}</span>

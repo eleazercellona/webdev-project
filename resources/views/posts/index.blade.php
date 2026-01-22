@@ -91,18 +91,22 @@
                                 <tr class="hover:bg-gray-50/50 transition-colors">
                                     <td class="px-8 py-5 text-[14px] font-medium text-blue-600 truncate max-w-[240px]">
                                         <span x-show="!loading" x-cloak>{{ $post->title }}</span>
-                                        <span x-show="loading" x-cloak class="block h-3 w-48 bg-gray-200 rounded-full animate-pulse"></span>
+                                        <span x-show="loading" x-cloak class="block h-4 w-48 bg-gray-200 rounded-full animate-pulse"></span>
                                     </td>
                                     <td class="px-8 py-5 text-[13px] text-gray-400 font-normal truncate max-w-[180px]">
                                         <span x-show="!loading" x-cloak>{{ $post->slug }}</span>
                                         <span x-show="loading" x-cloak class="block h-3 w-40 bg-gray-200 rounded-full animate-pulse"></span>
                                     </td>
                                     <td class="px-8 py-5">
-                                        <span
-                                            class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight"
-                                            :class="loading ? 'bg-transparent text-transparent' : '{{ $statusClass }}'"
-                                        >
-                                            <span x-show="!loading" x-cloak>{{ $post->is_published ? 'Published' : 'Draft' }}</span>
+                                        <span class="inline-flex items-center">
+                                            <span
+                                                class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-tight"
+                                                :class="'{{ $statusClass }}'"
+                                                x-show="!loading"
+                                                x-cloak
+                                            >
+                                                {{ $post->is_published ? 'Published' : 'Draft' }}
+                                            </span>
                                             <span x-show="loading" x-cloak class="block h-3 w-12 bg-gray-200 rounded-full animate-pulse"></span>
                                         </span>
                                     </td>
@@ -115,7 +119,7 @@
                                     <td class="px-8 py-5 text-[13px] text-gray-400">
                                         <span class="inline-block min-w-[96px]">
                                             <span x-show="!loading" x-cloak>{{ $post->updated_at->format('M d, Y') }}</span>
-                                            <span x-show="loading" x-cloak class="block h-3 w-[0px] bg-gray-200 rounded-full animate-pulse"></span>
+                                            <span x-show="loading" x-cloak class="block h-3 w-[96px] bg-gray-200 rounded-full animate-pulse"></span>
                                         </span>
                                     </td>
                                     <td class="px-8 py-5 text-right whitespace-nowrap space-x-3">
