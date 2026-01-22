@@ -6,8 +6,9 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <div style="font-weight: bold">
-                            WCMS
+                        <div class="flex items-center gap-2">
+                            <img src="{{ asset('images/ByteLog/ByteLog-Icon.png') }}" alt="ByteLog" class="h-8 w-8">
+                            <span class="font-bold text-gray-800 text-lg">ByteLog</span>
                         </div>
                     </a>
                 </div>
@@ -81,6 +82,10 @@
 
             <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.*')">
                 {{ __('Content') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('posts.published')" :active="request()->routeIs('posts.published')">
+                {{ __('Published') }}
             </x-responsive-nav-link>
         </div>
 

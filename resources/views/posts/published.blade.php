@@ -78,7 +78,29 @@
                             <div class="text-[13px] text-gray-400 font-medium italic">
                                 Showing {{ $dashboardPosts->firstItem() }}-{{ $dashboardPosts->lastItem() }} of {{ $dashboardPosts->total() }}
                             </div>
-                            {{-- ... (Your pagination number boxes) ... --}}
+                            <div class="flex items-center space-x-4">
+                                @if ($dashboardPosts->onFirstPage())
+                                    <span class="text-[13px] text-gray-300">Prev</span>
+                                @else
+                                    <a href="{{ $dashboardPosts->previousPageUrl() }}" class="text-[13px] text-gray-500 font-medium transition">Prev</a>
+                                @endif
+
+                                <div class="flex items-center space-x-2">
+                                    @foreach ($dashboardPosts->getUrlRange(1, $dashboardPosts->lastPage()) as $page => $url)
+                                        @if ($page == $dashboardPosts->currentPage())
+                                            <span class="w-8 h-8 flex items-center justify-center bg-blue-600 text-white rounded-lg text-[13px] font-bold shadow-sm">{{ $page }}</span>
+                                        @else
+                                            <a href="{{ $url }}" class="w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-lg text-[13px] font-medium">{{ $page }}</a>
+                                        @endif
+                                    @endforeach
+                                </div>
+
+                                @if ($dashboardPosts->hasMorePages())
+                                    <a href="{{ $dashboardPosts->nextPageUrl() }}" class="text-[13px] text-gray-500 font-medium transition">Next</a>
+                                @else
+                                    <span class="text-[13px] text-gray-300">Next</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

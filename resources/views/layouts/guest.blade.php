@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'ByteLog') }}</title>
+        <link rel="icon" type="image/png" href="{{ asset('images/ByteLog/ByteLog-Icon.png') }}">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -15,23 +16,13 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="header__outer">
-            <div style="font-weight: bold">
-                WCMS
-            </div>
-        </div>
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div class="w-full sm:max-w-md px-7 py-8 bg-white shadow-md overflow-hidden" style="border-radius: 16px">
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-10 sm:pt-0 bg-gray-100">
+            <div class="w-full sm:max-w-md px-7 py-8 bg-white shadow-md overflow-hidden rounded-2xl">
+                <div class="flex justify-center mb-6">
+                    <img src="{{ asset('images/ByteLog/ByteLog-Logo.png') }}" alt="ByteLog" class="h-[200px] w-auto drop-shadow-sm">
+                </div>
                 {{ $slot }}
             </div>
         </div>
     </body>
 </html>
-
-
-<style>
-    .header__outer {
-        padding: 20px 100px;
-        outline: 0.5px solid #d8d8d8ff
-    }
-</style>
