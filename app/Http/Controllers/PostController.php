@@ -152,7 +152,7 @@ class PostController extends Controller
         return redirect()->route('posts.index')->with('success', 'Post deleted successfully!');
     }
 
-    public function published()
+    public function published(Request $request)
     {
         $user = auth()->user();
 
@@ -162,7 +162,20 @@ class PostController extends Controller
             : \App\Models\Post::where('user_id', $user->id);
 
         // Filter only published items and paginate 10
-        $dashboardPosts = (clone $query)->where('is_published', true)->latest()->paginate(10);
+        $publishedQuery = (clone $query)->where('is_published', true);
+
+        // Sort newest/oldest (match Content tab)
+        if ($request->sort === 'oldest') {
+            $publishedQuery->orderBy('created_at', 'asc');
+        } else {
+            $publishedQuery->latest();
+        }
+
+        // Always paginate 10 per page and keep query string for filters
+        $dashboardPosts = $publishedQuery
+            ->with('user')
+            ->paginate(10)
+            ->withQueryString();
 
         return view('posts.published', [
             'dashboardPosts' => $dashboardPosts,

@@ -1,24 +1,37 @@
 <x-app-layout>
-    <!-- Header -->
-    <div class="pt-10">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-between items-center">
-            <div>
-                <h2 class="font-bold text-3xl text-gray-800">Edit Content</h2>
-                <p class="text-gray-500 text-sm mt-1">
-                    Update and manage your content entry.
-                </p>
+    @php($hasContent = true)
+    <div
+        x-data="{
+            ready: {{ $hasContent ? 'false' : 'true' }},
+            hasData: {{ $hasContent ? 'true' : 'false' }},
+            showDeleteModal: false,
+            get loading() { return this.hasData && !this.ready; }
+        }"
+        x-init="
+            if (!hasData) { ready = true; return; }
+            setTimeout(() => { ready = true; }, 500);
+        "
+    >
+        <!-- Header -->
+        <div class="pt-10">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex justify-between items-center">
+                <div>
+                    <h2 class="font-bold text-3xl text-gray-800">Edit Content</h2>
+                    <p class="text-gray-500 text-sm mt-1">
+                        Update and manage your content entry.
+                    </p>
+                </div>
+
+                <a href="{{ route('posts.index') }}"
+                   class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
+                    Back to Content
+                </a>
             </div>
-
-            <a href="{{ route('posts.index') }}"
-               class="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50">
-                Back to Content
-            </a>
         </div>
-    </div>
 
-    <!-- Body -->
-    <div class="py-10" x-data="{ showDeleteModal: false }">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <!-- Body -->
+        <div class="py-10">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <form method="POST"
                   action="{{ route('posts.update', $post) }}"
@@ -33,7 +46,10 @@
                     <!-- Title -->
                     <div class="mb-4">
                         <x-input-label value="Title" />
+                        <div x-show="loading" x-cloak class="mt-1 h-10 w-full bg-gray-200 rounded-lg animate-pulse"></div>
                         <x-text-input
+                            x-show="!loading"
+                            x-cloak
                             id="title"
                             class="mt-1 w-full"
                             name="title"
@@ -46,7 +62,10 @@
                     <!-- Slug (auto-generated) -->
                     <div class="mb-4">
                         <x-input-label value="Slug" />
+                        <div x-show="loading" x-cloak class="mt-1 h-10 w-full bg-gray-200 rounded-lg animate-pulse"></div>
                         <x-text-input
+                            x-show="!loading"
+                            x-cloak
                             id="slug"
                             class="mt-1 w-full bg-gray-50"
                             name="slug"
@@ -59,7 +78,10 @@
                     <!-- Body -->
                     <div>
                         <x-input-label value="Body" />
+                        <div x-show="loading" x-cloak class="mt-1 h-40 w-full bg-gray-200 rounded-lg animate-pulse"></div>
                         <textarea
+                            x-show="!loading"
+                            x-cloak
                             name="body"
                             rows="8"
                             class="mt-1 w-full border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
@@ -76,7 +98,10 @@
                     <div class="mb-4">
                         <x-input-label value="Status" />
                         @php($status = old('is_published', $post->is_published ? '1' : '0'))
+                        <div x-show="loading" x-cloak class="mt-1 h-10 w-full bg-gray-200 rounded-lg animate-pulse"></div>
                         <select
+                            x-show="!loading"
+                            x-cloak
                             name="is_published"
                             class="mt-1 w-full border-gray-300 rounded-lg shadow-sm">
                             <option value="0" @selected($status === '0')>Draft</option>
@@ -86,9 +111,21 @@
 
                     <!-- Meta -->
                     <div class="text-sm text-gray-500 space-y-1 mb-4">
-                        <div><strong>Author:</strong> {{ $post->user->name }}</div>
-                        <div><strong>Created:</strong> {{ $post->created_at->format('M d, Y') }}</div>
-                        <div><strong>Last updated:</strong> {{ $post->updated_at->format('M d, Y') }}</div>
+                        <div>
+                            <strong>Author:</strong>
+                            <span x-show="!loading" x-cloak>{{ $post->user->name }}</span>
+                            <span x-show="loading" x-cloak class="inline-block h-3 w-24 bg-gray-200 rounded-full animate-pulse align-middle"></span>
+                        </div>
+                        <div>
+                            <strong>Created:</strong>
+                            <span x-show="!loading" x-cloak>{{ $post->created_at->format('M d, Y') }}</span>
+                            <span x-show="loading" x-cloak class="inline-block h-3 w-24 bg-gray-200 rounded-full animate-pulse align-middle"></span>
+                        </div>
+                        <div>
+                            <strong>Last updated:</strong>
+                            <span x-show="!loading" x-cloak>{{ $post->updated_at->format('M d, Y') }}</span>
+                            <span x-show="loading" x-cloak class="inline-block h-3 w-28 bg-gray-200 rounded-full animate-pulse align-middle"></span>
+                        </div>
                     </div>
 
                     <!-- Buttons -->
@@ -124,6 +161,7 @@
         <div
             x-show="showDeleteModal"
             x-transition
+            x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
         >
             <div
@@ -145,7 +183,8 @@
                 <div class="bg-gray-50 rounded-lg p-3 mt-4 flex justify-between text-sm">
                     <span class="text-gray-500">Entry</span>
                     <span class="font-semibold text-gray-800">
-                        {{ $post->title }}
+                        <span x-show="!loading" x-cloak>{{ $post->title }}</span>
+                        <span x-show="loading" x-cloak class="inline-block h-3 w-40 bg-gray-200 rounded-full animate-pulse align-middle"></span>
                     </span>
                 </div>
 
@@ -169,6 +208,8 @@
                 </div>
             </div>
         </div>
+    </div>
+
     </div>
 
     <script>
