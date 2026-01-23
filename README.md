@@ -1,4 +1,4 @@
-# ByteLog: CMS (Laragon + Google Drive)
+# ByteLog: CMS
 
 ## Order of operations to avoid install blockers
 1) Extract zip to `C:\laragon\www\bytelog-cms` (or your chosen name).
